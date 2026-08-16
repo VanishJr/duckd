@@ -35,8 +35,24 @@ export function phaseIndex(phase: Phase): number {
 }
 
 /**
- * Entry phase is not always LOCATE: rich context (logs, a clear repro) lets the
- * duck open closer to UNDERSTAND. See Strict Rule 4 in the spec.
+ * Which phase a session may open in.
+ *
+ * Strict Rule 4: little context means opening in LOCATE with broad questions,
+ * while rich context (logs, a clear repro) lets the duck open closer to
+ * UNDERSTAND. Those are the two entry points the spec sanctions. SOLVE is not
+ * one of them, because its rhythm starts with the developer proposing a fix,
+ * which presupposes a root cause they have already articulated.
+ *
+ * Nothing calls this yet. Entry is chosen during Preparation, which is not
+ * implemented.
+ */
+export function isLegalEntryPhase(phase: Phase): boolean {
+  return phase !== 'SOLVE'
+}
+
+/**
+ * Legal moves once a session is under way. Which phase it opened in is a
+ * separate question, see `isLegalEntryPhase`.
  */
 export function isLegalTransition(from: Phase, to: Phase): boolean {
   const delta = phaseIndex(to) - phaseIndex(from)

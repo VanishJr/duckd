@@ -6,6 +6,7 @@ export {
   hintLevelFor,
 } from './hints.js'
 export {
+  isLegalEntryPhase,
   isLegalTransition,
   PHASE_EXIT_CONDITIONS,
   PHASE_TAGS,

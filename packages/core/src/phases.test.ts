@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { hintLevelFor } from './hints.js'
-import { isLegalTransition, PHASE_TAGS, PHASES } from './phases.js'
+import { isLegalEntryPhase, isLegalTransition, PHASE_TAGS, PHASES } from './phases.js'
+
+describe('entry phase', () => {
+  it('opens in LOCATE or UNDERSTAND, never in SOLVE', () => {
+    expect(isLegalEntryPhase('LOCATE')).toBe(true)
+    expect(isLegalEntryPhase('UNDERSTAND')).toBe(true)
+    expect(isLegalEntryPhase('SOLVE')).toBe(false)
+  })
+})
 
 describe('phase transitions', () => {
   it('allows advancing exactly one phase', () => {
