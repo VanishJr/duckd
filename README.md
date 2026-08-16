@@ -52,9 +52,23 @@ Every debugging session moves through three phases:
 > **You:** oh I see, the state updates but the component doesn't re-render
 >
 > **Duck [🦆 UNDERSTAND]:** What is it that tells your framework a component needs to re-render?
+>
+> **You:** the state setter. I was mutating the array in place and setting the same reference back.
+>
+> **Duck [🦆 UNDERSTAND]:** That is the root cause in your own words. What do you want to do about it?
+>
+> **You:** spread it into a new array before I set state.
+>
+> **Duck [🦆 SOLVE]:** That fixes this call site. What happens the next time someone updates that same array somewhere else in the codebase?
+>
+> **You:** fair. I'd rather put the update behind one helper that always returns a new array, and use that everywhere.
+>
+> **Duck [🦆 SOLVE]:** I cannot poke a hole in that on paper. Go run it: does the component re-render now?
 
 Notice: one question per turn, the phase tag every time, and the duck never says
-"you forgot to use a state setter" — it lets you arrive there.
+"you mutated the array" or "use a helper", it lets you arrive there. In SOLVE it
+raises exactly one drawback per turn and closes on running the code, not on
+winning the argument.
 
 ## The spec is the source of truth
 
