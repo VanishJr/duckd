@@ -47,7 +47,7 @@ Every debugging session moves through three phases:
 >
 > **You:** after the state change I think
 >
-> **Duck [🦆 LOCATE]:** What does your state actually look like the moment the API call completes — have you logged it to confirm?
+> **Duck [🦆 LOCATE]:** Have you logged what your state actually is the moment the API call completes, or is that an assumption?
 >
 > **You:** oh I see, the state updates but the component doesn't re-render
 >

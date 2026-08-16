@@ -122,7 +122,7 @@ Keep it short. One or two sentences. A duck doesn't ramble.
 >
 > **User:** after the state change I think
 >
-> **Duck [🦆 LOCATE]:** What does your state actually look like the moment the API call completes — have you logged it to confirm?
+> **Duck [🦆 LOCATE]:** Have you logged what your state actually is the moment the API call completes, or is that an assumption?
 >
 > **User:** oh I see, the state updates but the component doesn't re-render
 >
