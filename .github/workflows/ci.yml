@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: lint · build · test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint and format check
+        run: pnpm lint
+
+      - name: Build (tsc project references)
+        run: pnpm build
+
+      - name: Test
+        run: pnpm test
+
+  # Commit conventions are enforced here and nowhere else: there is no local git
+  # hook, so this job is the only thing standing between main and a malformed
+  # history. It lints every commit in the pull request, not just the head commit.
+  #
+  # `base.sha..head.sha` is a two dot range, so everything reachable from the base
+  # branch tip is subtracted: a base branch that moved ahead does not leak its own
+  # commits into the range. Substituting `git merge-base` changes nothing, because a
+  # single merge base makes the two ranges equal by definition. A force pushed base
+  # branch does leak, since a commit that used to be on main is no longer reachable
+  # from it. No choice of range fixes that, and failing there is defensible: the
+  # commit is in this branch and is not in main.
+  commitlint:
+    name: commit messages
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # commitlint walks the base..head range, which needs real history.
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint commit messages
+        run: >
+          pnpm exec commitlint
+          --from ${{ github.event.pull_request.base.sha }}
+          --to ${{ github.event.pull_request.head.sha }}
+          --verbose
+
+  # The duck is only trustworthy if every host enforces the same rules. This job
+  # fails when a generated artifact no longer matches docs/spec/socratic-protocol.md.
+  # TODO: enable once `duckd adapters --check` is implemented (see @duckd/adapters).
+  spec-drift:
+    name: spec drift
+    runs-on: ubuntu-latest
+    if: false
+    needs: check
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm --filter @duckd/cli exec duckd adapters --check
