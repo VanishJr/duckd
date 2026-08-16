@@ -1,0 +1,22 @@
+{
+  "name": "@duckd/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Phase state machine, session store, LLM provider interface and hint ladder. Host-agnostic.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "tsc -b --clean"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:"
+  }
+}
