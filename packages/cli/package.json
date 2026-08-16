@@ -1,0 +1,31 @@
+{
+  "name": "@duckd/cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The duckd command line: start, sessions, export, adapters.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "duckd": "./dist/bin.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "tsc -b --clean"
+  },
+  "dependencies": {
+    "@duckd/adapters": "workspace:*",
+    "@duckd/code-context": "workspace:*",
+    "@duckd/core": "workspace:*",
+    "commander": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "@duckd/code-context",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Repository evidence for the duck: git diff/blame, tree-sitter structure, later LSP.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "tsc -b --clean"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:"
+  }
+}

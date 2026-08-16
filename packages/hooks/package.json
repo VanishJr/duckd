@@ -1,0 +1,29 @@
+{
+  "name": "@duckd/hooks",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Claude Code PreToolUse / Stop guard scripts that keep the host agent from leaking the fix.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "duckd-guard-pretooluse": "./dist/pre-tool-use.js",
+    "duckd-guard-stop": "./dist/stop.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "tsc -b --clean"
+  },
+  "dependencies": {
+    "@duckd/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:"
+  }
+}

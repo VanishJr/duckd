@@ -1,0 +1,12 @@
+{
+  "name": "duckd",
+  "version": "0.0.0",
+  "description": "A Socratic debugging companion that guides you to the bug instead of handing you the fix.",
+  "author": {
+    "name": "VanishJr",
+    "url": "https://github.com/VanishJr"
+  },
+  "homepage": "https://github.com/VanishJr/duckd",
+  "license": "MIT",
+  "keywords": ["debugging", "socratic", "learning", "mentoring"]
+}

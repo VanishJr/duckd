@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "duckd": {
+      "command": "duckd-mcp",
+      "args": ["--transport", "stdio"],
+      "env": {}
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "@duckd/adapters",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Generates host-specific artifacts (AGENTS.md, .cursor/rules, .github/skills) from the spec.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "tsc -b --clean"
+  },
+  "dependencies": {
+    "@duckd/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:"
+  }
+}
