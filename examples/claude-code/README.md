@@ -9,7 +9,7 @@ MCP server config in one plugin.
 claude plugin install ./examples/claude-code
 ```
 
-Then start any message with `@rubber-duck`.
+Then start any message with `@duck`.
 
 ## What's in here
 

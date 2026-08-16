@@ -41,7 +41,7 @@ Every debugging session moves through three phases:
 
 ## Worked example
 
-> **You:** @rubber-duck my API call returns 200 but the data doesn't update in the UI
+> **You:** @duck my API call returns 200 but the data doesn't update in the UI
 >
 > **Duck [🦆 LOCATE]:** Where in the flow do you first expect to see the data update — right after the API call returns, or after some state change downstream?
 >
