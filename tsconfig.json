@@ -1,0 +1,13 @@
+{
+  "//": "Solution-style root config: builds nothing itself, only orders the package builds for `tsc -b`.",
+  "files": [],
+  "references": [
+    { "path": "packages/core" },
+    { "path": "packages/code-context" },
+    { "path": "packages/adapters" },
+    { "path": "packages/mcp" },
+    { "path": "packages/hooks" },
+    { "path": "packages/cli" },
+    { "path": "packages/evals" }
+  ]
+}

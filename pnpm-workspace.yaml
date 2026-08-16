@@ -1,0 +1,15 @@
+packages:
+  - packages/*
+
+# Single source of truth for dependency versions. Packages reference `catalog:`
+# instead of a range, so a bump happens in one place and cannot skew between packages.
+catalog:
+  '@biomejs/biome': ^2.5.8
+  '@commitlint/cli': ^21.2.2
+  '@commitlint/config-conventional': ^21.2.2
+  '@modelcontextprotocol/sdk': ^1.30.0
+  '@types/node': ^24.13.3
+  commander: ^15.0.0
+  typescript: ^7.0.2
+  vitest: ^4.1.10
+  zod: ^4.4.3
