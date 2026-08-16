@@ -1,63 +1,117 @@
-# junie-skills 🎓
+# duckd 🦆
 
-A growing collection of **Claude Code skills for junior developers** ("junies").
+A **Socratic debugging companion**. Instead of handing you the fix, the duck asks
+you one question at a time and guides you to find the answer yourself.
 
-The skills here share one philosophy: they help juniors *grow*, not just ship.
-Where most AI tooling hands over the finished answer, these skills are built to
-teach the instincts behind the answer — so the next bug, review, or design
-decision is one the developer can handle on their own.
+> Named after [rubber duck debugging](https://en.wikipedia.org/wiki/Rubber_duck_debugging) —
+> the practice of explaining your problem aloud to an inanimate duck until the
+> solution becomes obvious. This is that duck, except it asks questions back.
 
-This is a personal, evolving collection. Skills get added as ideas come up.
+## Philosophy
 
-## Skills
+The fastest way to fix a bug is often to be asked the right question. When someone
+hands you the answer, you fix the bug but learn nothing — and you stay dependent.
+When you're guided to the answer, you fix the bug *and* sharpen the instincts that
+prevent the next ten.
 
-| Skill | What it does | Status |
-|-------|--------------|--------|
-| [🦆 rubber-duck](./rubber-duck) | A Socratic debugging companion that guides you to the bug with one question at a time and **never hands over the fix**. | Prototype — in testing |
+The duck is built on one rule: **it never gives you the solution.** Not even if you
+ask. It's a tool for your thinking, not a replacement for it. The reward is that the
+insight is genuinely yours.
 
-> More skills will land here over time. Each lives in its own top-level folder.
+## How it works
 
-## How a skill is structured
+Every debugging session moves through three phases:
 
-Every skill is a self-contained folder:
+| Phase | Goal | What the duck does |
+|-------|------|--------------------|
+| `[🦆 LOCATE]` | Find **where** the problem is | Asks questions that make you trace the flow and observe instead of assume |
+| `[🦆 UNDERSTAND]` | Find **why** it happens | Probes your mental model to find where it disagrees with reality |
+| `[🦆 SOLVE]` | Pressure-test your fix | You propose a solution; the duck gives ONE drawback; you refine; repeat |
+
+### The rules the duck follows
+
+- **Won't hand you the fix for casual pleading** — but if you *deliberately* tell it to step out and just give the answer, it will, after warning you the insight won't stick the same way.
+- **One question (or one critique) per response.** No walls of text, no stacked questions.
+- **Won't skip ahead — and won't cling either.** It stays in a phase until that phase is genuinely resolved, and drops back if later evidence shows it took a wrong turn.
+- **Does its homework first.** It reads the ticket/context, forms a few *private, competing* hypotheses about where the bug might be, then asks for *your* read before steering — and never reveals its guesses or lets one tunnel-vision the questions.
+- **Adapts to your context.** Vague problem → broad locating questions. Detailed problem with logs → it jumps closer to the root cause.
+- **Unblocks you when you're stuck.** Stuck for 2+ exchanges? It gives a small hint to shrink the search space — never the answer.
+- **Ends on reality, not argument.** When your fix holds up on paper, it sends you to run it and confirm — done means verified.
+- **Always shows the current phase** at the start of each reply.
+
+## Worked example
+
+> **You:** @rubber-duck my API call returns 200 but the data doesn't update in the UI
+>
+> **Duck [🦆 LOCATE]:** Where in the flow do you first expect to see the data update — right after the API call returns, or after some state change downstream?
+>
+> **You:** after the state change I think
+>
+> **Duck [🦆 LOCATE]:** What does your state actually look like the moment the API call completes — have you logged it to confirm?
+>
+> **You:** oh I see, the state updates but the component doesn't re-render
+>
+> **Duck [🦆 UNDERSTAND]:** What is it that tells your framework a component needs to re-render?
+
+Notice: one question per turn, the phase tag every time, and the duck never says
+"you forgot to use a state setter" — it lets you arrive there.
+
+## The spec is the source of truth
+
+The duck's behaviour lives in one normative document:
+
+**[`docs/spec/socratic-protocol.md`](./docs/spec/socratic-protocol.md)**
+
+The engine and every generated adapter (Claude Code, Cursor, Copilot, Junie) are
+derived from that file. Behaviour changes go there first, then get regenerated —
+adapters are never edited by hand.
+
+## Repository layout
 
 ```
-<skill-name>/
-├── SKILL.md      # the skill itself — the only file Claude Code needs
-└── README.md     # human-facing docs for that skill
+docs/
+├── spec/socratic-protocol.md   # normative behaviour — the source of truth
+├── adr/                        # architecture decision records
+└── architecture.md             # how the packages fit together
+packages/
+├── core/                       # state machine, session store, providers, hint ladder
+├── mcp/                        # MCP server over core (stdio + streamable HTTP)
+├── cli/                        # duckd start / sessions / export / adapters
+├── code-context/               # git diff & blame, tree-sitter, later LSP
+├── hooks/                      # Claude Code PreToolUse / Stop guards
+├── adapters/                   # generates AGENTS.md, .cursor/rules, .github/skills
+└── evals/                      # socratic-debugging-benchmark runs
+examples/
+└── claude-code/                # installable plugin bundle: skill + hooks + MCP config
 ```
 
-Only `SKILL.md` is required for a skill to run. The `README.md` is
-documentation for people.
+Dependencies point inward at `core`, which depends on nothing else in the workspace.
+[`docs/architecture.md`](./docs/architecture.md) explains why.
 
-## Installing a skill
+## Development
 
-These are user-level Claude Code skills. Drop the skill's folder where Claude
-Code looks for skills:
+Requires Node 24 (see `.nvmrc`) and pnpm — `corepack enable pnpm` picks up the pinned
+version from `package.json`.
 
-**macOS / Linux**
 ```bash
-cp -r rubber-duck ~/.claude/skills/
+pnpm install
+pnpm check      # biome + tsc -b + vitest, the same gate CI runs
 ```
 
-**Windows (PowerShell)**
-```powershell
-Copy-Item -Recurse rubber-duck "$env:USERPROFILE\.claude\skills\"
-```
+| Script | Does |
+|--------|------|
+| `pnpm build` | `tsc -b` across the project-reference graph |
+| `pnpm test` | Vitest |
+| `pnpm lint` | Biome lint + format check |
+| `pnpm format` | Biome, writing fixes |
 
-To scope a skill to a single project instead, copy its folder into
-`.claude/skills/` inside that repository.
+## Status
 
-See each skill's own README for activation and usage details.
+Early, and honest about it: the spec is written and the skeleton builds green, but the
+engine, the MCP server and the generated adapters are stubs. Every unimplemented piece is
+marked with a `TODO` naming the package that owns it. Installation instructions land with
+the adapters — see [ROADMAP.md](./ROADMAP.md).
 
-## Adding a new skill
+## License
 
-1. Create a new top-level folder named after the skill.
-2. Add a `SKILL.md` with frontmatter (`name`, `description`) and the skill's instructions.
-3. Add a `README.md` explaining what it does and how to use it.
-4. Add a row to the **Skills** table above.
-
-## Why "junie"?
-
-Because the audience is junior developers — and the goal is to give them skills
-that make them less junior every time they use one.
+[MIT](./LICENSE)
