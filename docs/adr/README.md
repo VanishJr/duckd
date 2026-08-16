@@ -17,3 +17,4 @@ marked `Superseded by ADR-NNNN`.
 | ADR | Title | Status |
 |-----|-------|--------|
 | [0001](./0001-typescript-monorepo.md) | TypeScript monorepo on pnpm workspaces | Accepted |
+| [0002](./0002-llm-provider-not-mcp-sampling.md) | Model access through `LlmProvider`, not MCP sampling | Accepted |

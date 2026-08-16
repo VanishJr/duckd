@@ -44,5 +44,8 @@ export class ScriptedProvider implements LlmProvider {
   }
 }
 
-// TODO(providers): AnthropicProvider, OpenAIProvider, and a host-delegated provider
-// for the case where the surrounding agent runs the model itself (see ADR on MCP sampling).
+// TODO(providers): AnthropicProvider and OpenAIProvider.
+// A host-delegated provider, where the surrounding agent runs the model instead of duckd,
+// is not a planned deliverable: MCP sampling is deprecated and Claude Code does not
+// implement it. The interface still permits one if a client ever justifies it.
+// See docs/adr/0002-llm-provider-not-mcp-sampling.md.

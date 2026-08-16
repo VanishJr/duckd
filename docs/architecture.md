@@ -92,7 +92,11 @@ with the in-memory implementation reserved for tests and `--ephemeral` runs.
 
 Tracked as ADRs in [`docs/adr/`](./adr/) as they are decided:
 
-- Who runs the model — an `LlmProvider` holding its own API key, or the host agent via
-  MCP sampling? This decides whether duckd is a service or a library.
 - File-backed store vs SQLite, once concurrent hook and server access is real.
 - Whether `@duckd/core` is published independently, which requires a release tool.
+
+Who runs the model is no longer one of them.
+[ADR-0002](./adr/0002-llm-provider-not-mcp-sampling.md) settles it: model access goes
+through `LlmProvider`, which owns its own credentials, and host-delegated MCP sampling is
+rejected. Sampling is deprecated as of MCP revision 2026-07-28 and Claude Code does not
+implement it.
