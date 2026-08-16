@@ -39,7 +39,7 @@ describe('hint ladder', () => {
     expect(hintLevelFor(2)).toBe('narrow')
   })
 
-  it('is capped — escalation never reaches the answer', () => {
+  it('is capped: escalation never reaches the answer', () => {
     expect(hintLevelFor(99)).toBe('name-mechanism')
   })
 })

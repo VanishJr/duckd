@@ -26,7 +26,7 @@ export interface Session {
   readonly hintLevel: HintLevel
   /**
    * Private competing hypotheses (Preparation step 2). Persisted so a resumed
-   * session keeps its investigative spread — never rendered to the developer.
+   * session keeps its investigative spread, never rendered to the developer.
    */
   readonly hypotheses: readonly string[]
   /** Set once the developer takes the off-ramp; the duck stops withholding. */

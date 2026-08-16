@@ -4,8 +4,8 @@ The engine, spoken as MCP.
 
 ## Transports
 
-- **stdio** — the editor spawns the server as a child process. Default for Claude Code, Cursor and Junie.
-- **streamable HTTP** — one duck, many clients, shared session store.
+- **stdio**: the editor spawns the server as a child process. Default for Claude Code, Cursor and Junie.
+- **streamable HTTP**: one duck, many clients, shared session store.
 
 ## Tool surface
 

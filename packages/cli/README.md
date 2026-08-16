@@ -1,6 +1,6 @@
 # @duckd/cli
 
-The `duckd` binary — the duck with no editor attached.
+The `duckd` binary: the duck with no editor attached.
 
 | Command | Does |
 |---------|------|
@@ -11,8 +11,8 @@ The `duckd` binary — the duck with no editor attached.
 
 ## Why the CLI exists
 
-It is the reference client, not a convenience. A session that works here — plain
-stdin/stdout, same `@duckd/core` engine, no host agent in the loop — proves the
+It is the reference client, not a convenience. A session that works here (plain
+stdin/stdout, same `@duckd/core` engine, no host agent in the loop) proves the
 behaviour lives in the engine. Anything an editor adapter has to add beyond
 rendering is a smell worth chasing.
 

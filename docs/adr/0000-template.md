@@ -1,4 +1,4 @@
-# ADR-NNNN — <short title of the decision>
+# ADR-NNNN: <short title of the decision>
 
 - **Status:** Proposed
 - **Date:** YYYY-MM-DD
@@ -11,11 +11,11 @@ that are true regardless of which option wins. No advocacy here.
 
 ## Options considered
 
-### Option A — <name>
+### Option A: <name>
 
 What it is, and the honest trade-off.
 
-### Option B — <name>
+### Option B: <name>
 
 What it is, and the honest trade-off.
 
@@ -23,7 +23,7 @@ What it is, and the honest trade-off.
 
 We chose **<option>**.
 
-Why this one beats the others *given the context above* — not why it is good in
+Why this one beats the others *given the context above*, not why it is good in
 the abstract.
 
 ## Consequences

@@ -43,7 +43,7 @@ property the whole layout exists to protect.
 No transport, no filesystem, no vendor SDK. Every model call goes through `LlmProvider`;
 every repository read goes through `@duckd/code-context` and arrives as an argument. This
 is what lets `@duckd/evals` run the engine thousands of times with a `ScriptedProvider`
-and no network — and an engine that can't be evaluated cheaply won't be evaluated at all.
+and no network. An engine that can't be evaluated cheaply won't be evaluated at all.
 
 **2. The spec is upstream of every artifact.**
 Five hosts want the same behaviour in five dialects. Written by hand they drift, and a
@@ -83,7 +83,7 @@ that bypasses all of this, and only the developer can take it.
 
 ## Where state lives
 
-Sessions outlive any single process — the MCP server answers a question, a hook consults
+Sessions outlive any single process: the MCP server answers a question, a hook consults
 the same session milliseconds later, and the CLI resumes it tomorrow. `SessionStore` is
 therefore an interface, defaulting to file-backed storage under `~/.duckd/sessions/`,
 with the in-memory implementation reserved for tests and `--ephemeral` runs.

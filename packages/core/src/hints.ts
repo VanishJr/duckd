@@ -1,5 +1,5 @@
 /**
- * The hint ladder — Strict Rule 5 of the spec.
+ * The hint ladder, Strict Rule 5 of the spec.
  *
  * "If the developer is clearly stuck on the same point for 2+ exchanges in one
  * phase, give a small hint [...] but never the answer. A hint reduces the search
@@ -19,7 +19,7 @@ export interface HintRung {
   readonly unlocksAfterStuckExchanges: number
   /** What the duck is allowed to say at this rung. */
   readonly allows: string
-  /** What it still may not say — invariant at every rung. */
+  /** What it still may not say, invariant at every rung. */
   readonly forbids: string
 }
 
@@ -50,7 +50,7 @@ export const HINT_LADDER: readonly HintRung[] = [
   },
 ]
 
-/** The ladder is capped by construction — there is no rung above `name-mechanism`. */
+/** The ladder is capped by construction: there is no rung above `name-mechanism`. */
 export function hintLevelFor(stuckExchanges: number): HintLevel {
   let level: HintLevel = 'none'
   for (const rung of HINT_LADDER) {

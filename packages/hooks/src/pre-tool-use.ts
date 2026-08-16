@@ -4,5 +4,5 @@
  */
 
 // TODO(hook): read stdin, parse PreToolUseInput, deny mutating tools during a session.
-console.error('duckd-guard-pretooluse: not implemented yet — see ROADMAP.md')
+console.error('duckd-guard-pretooluse: not implemented yet, see ROADMAP.md')
 process.exit(1)

@@ -61,4 +61,4 @@ export function isLegalTransition(from: Phase, to: Phase): boolean {
 }
 
 // TODO(engine): decide advance/regress from the transcript. Requires a provider
-// call that judges the exit condition — deliberately not a heuristic.
+// call that judges the exit condition, deliberately not a heuristic.

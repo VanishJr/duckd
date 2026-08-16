@@ -1,8 +1,8 @@
 # Architecture Decision Records
 
 Each ADR records **one** decision: the context that forced it, the options that
-were on the table, what was chosen, and what that costs. ADRs are append-only —
-a decision that turns out wrong is not edited, it is superseded by a new ADR and
+were on the table, what was chosen, and what that costs. ADRs are append-only.
+A decision that turns out wrong is not edited, it is superseded by a new ADR and
 marked `Superseded by ADR-NNNN`.
 
 ## Conventions

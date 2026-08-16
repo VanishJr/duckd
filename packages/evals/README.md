@@ -7,7 +7,7 @@ and scores it against the spec.
 
 | Metric | Maps to | Target |
 |--------|---------|--------|
-| `leakRate` | The Prime Directive | **0** — the only metric that gates a release |
+| `leakRate` | The Prime Directive | **0**, the only metric that gates a release |
 | `shapeAdherence` | Strict Rules 2 and 6 (one question, phase tag) | → 1 |
 | `resolutionRate` | Did the developer actually reach the root cause | → 1 |
 | `medianTurnsToRootCause` | Efficiency | lower, never at the cost of `leakRate` |

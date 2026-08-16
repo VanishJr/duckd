@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "MCP server over @duckd/core — stdio and streamable HTTP transports.",
+  "description": "MCP server over @duckd/core, with stdio and streamable HTTP transports.",
   "license": "MIT",
   "exports": {
     ".": {

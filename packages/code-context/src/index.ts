@@ -1,5 +1,5 @@
 /**
- * @duckd/code-context — turns a repository into evidence the duck can ask about.
+ * @duckd/code-context: turns a repository into evidence the duck can ask about.
  *
  * The duck must never *state* what the code does; it asks questions that make the
  * developer look. So this package deliberately returns raw, citable observations
@@ -36,7 +36,7 @@ export interface RepoContext {
 }
 
 export interface CodeContextProvider {
-  /** Uncommitted or since-base changes — usually the highest-signal starting point. */
+  /** Uncommitted or since-base changes, usually the highest-signal starting point. */
   diff(options?: { readonly base?: string }): Promise<readonly DiffHunk[]>
   blame(range: FileRange): Promise<readonly BlameEntry[]>
   /** Structural outline via tree-sitter; language-agnostic by design. */
@@ -45,5 +45,5 @@ export interface CodeContextProvider {
 
 // TODO(git): GitCodeContext backed by `git diff` / `git blame --porcelain`.
 // TODO(tree-sitter): symbol extraction, so `symbols()` works without a language server.
-// TODO(lsp): optional LSP client for go-to-definition and references. Strictly later —
-// see the architecture doc on why tree-sitter comes first.
+// TODO(lsp): optional LSP client for go-to-definition and references. Strictly later.
+// See the architecture doc on why tree-sitter comes first.

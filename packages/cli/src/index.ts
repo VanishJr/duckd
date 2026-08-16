@@ -1,5 +1,5 @@
 /**
- * @duckd/cli — the duck without an editor.
+ * @duckd/cli: the duck without an editor.
  *
  * The CLI is not a convenience wrapper; it is the reference client. If a debugging
  * session works here, over plain stdin/stdout and the same `@duckd/core` engine,

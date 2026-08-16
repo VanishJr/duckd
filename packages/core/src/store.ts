@@ -12,7 +12,7 @@ export interface SessionStore {
   delete(id: SessionId): Promise<boolean>
 }
 
-/** Volatile store — the default for tests and for `duckd start --ephemeral`. */
+/** Volatile store: the default for tests and for `duckd start --ephemeral`. */
 export class InMemorySessionStore implements SessionStore {
   readonly #sessions = new Map<SessionId, Session>()
 

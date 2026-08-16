@@ -5,5 +5,5 @@
  */
 
 // TODO(bin): parse --transport/--port, then start the server from ./index.js.
-console.error('duckd-mcp: not implemented yet — see ROADMAP.md')
+console.error('duckd-mcp: not implemented yet, see ROADMAP.md')
 process.exit(1)

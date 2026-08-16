@@ -5,5 +5,5 @@
  */
 
 // TODO(hook): read stdin, validate phase tag + single-question rule, block on violation.
-console.error('duckd-guard-stop: not implemented yet — see ROADMAP.md')
+console.error('duckd-guard-stop: not implemented yet, see ROADMAP.md')
 process.exit(1)
