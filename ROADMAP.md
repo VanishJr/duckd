@@ -13,6 +13,10 @@ What gets built and in what order. How the system is shaped is
 - `depends: S0-03` blocks the task on another task. `depends: OD-5` blocks it on
   an open decision, which means the decision has to be made and written down
   before the code can be written.
+- Stages 0 and 1 are committed scope. Stages 2 through 4 are provisional: they
+  exist to make the direction explicit, not to promise delivery. Reordering or
+  cutting within 2 through 4 is expected and does not need an amendment to this
+  document.
 - Every `TODO(` marker in the tree maps to a task. The mapping is at the bottom.
 
 Starting point: `@duckd/core` has the phase machine (legal transitions, legal
