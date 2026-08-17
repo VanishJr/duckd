@@ -10,7 +10,7 @@ What gets built and in what order. How the system is shaped is
 - Sizes are estimated in working sessions, never in calendar time.
   **(S)** is under a session, **(M)** is about a session, **(L)** is a full
   demanding session. Anything larger is split.
-- `depends: S0-03` blocks the task on another task. `depends: OD-2` blocks it on
+- `depends: S0-03` blocks the task on another task. `depends: OD-5` blocks it on
   an open decision, which means the decision has to be made and written down
   before the code can be written.
 - Every `TODO(` marker in the tree maps to a task. The mapping is at the bottom.
@@ -53,13 +53,18 @@ real bugs with it in Claude Code instead of asking the agent directly.
 
 **Tasks.**
 
+- [ ] S0-00a (M) Decide OD-3, who authors the text the developer reads, and
+      write it into the spec or an ADR.
+- [ ] S0-00b (S) Decide OD-2, Session.phase against Turn.phase. ADR.
+- [ ] S0-00c (M) Decide OD-6, one provider call per turn or several. ADR.
+- [ ] S0-00d (M) Decide OD-4 and ratify the hint ladder into the spec.
 - [ ] S0-01 (M) Prompt set as pure string builders in `core`: exit-condition
       judge, stuck judge, question generator. No I/O, no vendor types.
-      depends: OD-3, OD-6
+      depends: S0-00a, S0-00c
 - [ ] S0-02 (L) `advance(session, developerTurn, provider)`: run the judge, apply
       the transition through `isLegalTransition`, update `stuckExchanges` and
       `hintLevel`, return the next duck turn plus the new session.
-      depends: S0-01, OD-2
+      depends: S0-01, S0-00b, S0-00d
 - [ ] S0-03 (S) Transition tests against `ScriptedProvider`: advance, stay,
       regress across two phases, and a rejected illegal transition.
       depends: S0-02
@@ -160,7 +165,7 @@ breadth.
 - [ ] S1-12 (M) `run(suite, provider) -> EvalRun` plus the Markdown report
       writer. depends: S1-10, S1-11, S0-02
 - [ ] S1-13 (S) `hintOverreach`: compare the rung a turn used against the rung
-      the ladder had unlocked. depends: S1-12, OD-4
+      the ladder had unlocked. depends: S1-12, S0-00d
 - [ ] S1-14 (S) First numbers in the README, with their provenance.
       depends: S1-12
 - [ ] S1-15 (S) Install the hooks bundle locally and record what Claude Code
@@ -418,7 +423,7 @@ the loop, and it is not written down which one produces the visible question.
   back to the first option anyway.
 
 This determines what S0-01 generates and what the `Stop` guard is actually
-checking, so it is a Stage 0 decision.
+checking, so it is a Stage 0 decision (S0-00a).
 
 ### OD-4: what counts as a stuck exchange, and are the upper rungs normative?
 
@@ -439,6 +444,14 @@ Separately, nothing defines "stuck":
 
 Also undecided: whether `stuckExchanges` resets on a forward transition, on a
 regression, or on neither.
+
+This is a Stage 0 blocker (S0-00d) rather than a later cleanup because the
+thresholds of 2, 4 and 6 in `HINT_LADDER` are already on `main` while the spec
+states only the first. S0-02 is what makes them executable behaviour, and from
+that point code that extends the spec is driving the engine, which breaks the
+source of truth rule in `AGENTS.md` in the one place the project cannot afford
+it. The ladder is ratified into the spec, or reduced to what the spec says,
+before anything depends on it.
 
 ### OD-5: how does an out-of-process guard find the open session?
 
