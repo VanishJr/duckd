@@ -82,7 +82,14 @@ real bugs with it in Claude Code instead of asking the agent directly.
       precedence documented. Startup fails clean and names the fix.
       depends: S0-07
 - [ ] S0-09 (M) zod schemas for the four MCP tools, exported so the CLI validates
-      the same shapes.
+      the same shapes. The four are `duck_start_session` (open a session on a
+      problem statement), `duck_respond` (one developer turn in, one duck turn
+      out), `duck_get_session` (read session state for a resume or a guard) and
+      `duck_end_session` (close on a verified fix or an abandoned session). That
+      is the session lifecycle in `docs/architecture.md` and nothing beyond it:
+      the off-ramp is a branch inside `duck_respond` (S0-04) and not a fifth
+      tool. `TOOL_NAMES` in `packages/mcp/src/index.ts` already carries these
+      four names; this task does not get to change them quietly.
 - [ ] S0-10 (L) `createDuckServer(options)`: the four tools wired to `core` and
       `FileSessionStore`. depends: S0-02, S0-05, S0-09
 - [ ] S0-11 (M) `duckd-mcp` bin: `--transport stdio`, `--session-dir`, clean
@@ -356,8 +363,9 @@ anything.
 - **Behaviour that varies by host.** Hosts differ in rendering and in what they
   can enforce. They do not differ in what the duck will and will not say.
 - **General assistance.** Not code review, not a linter, not an explainer, not a
-  chat interface. The tool surface stays at four MCP tools, because every extra
-  tool is another route around the constraint.
+  chat interface. The tool surface stays at the four MCP tools named in S0-09
+  (`duck_start_session`, `duck_respond`, `duck_get_session`, `duck_end_session`),
+  because every extra tool is another route around the constraint.
 - **A non-Node runtime.** Rejected in ADR-0001 on integration cost.
 - **Independent package versioning before 1.0.** Requires a release tool; the
   packages move together until there is a reason they should not.
