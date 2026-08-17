@@ -433,6 +433,15 @@ the loop, and it is not written down which one produces the visible question.
 This determines what S0-01 generates and what the `Stop` guard is actually
 checking, so it is a Stage 0 decision (S0-00a).
 
+The second half of that is the larger half. If the tool returns the final text
+and the host relays it, the `Stop` guard is checking text duckd generated
+itself, and its remaining value is catching what the host added on top. If the
+tool returns a directive and the host phrases the question, the guard is the
+only mechanism holding the Prime Directive on text duckd did not write, and
+S1-03 becomes the single most important task in Stage 1. Decided on Stage 0
+convenience alone, that consequence surfaces long after the decision, in a stage
+whose shape it already changed.
+
 ### OD-4: what counts as a stuck exchange, and are the upper rungs normative?
 
 The spec states one threshold: a hint after 2 or more stuck exchanges in a phase.
