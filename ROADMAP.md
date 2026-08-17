@@ -123,7 +123,13 @@ breadth.
   report covering all five metrics in `EvalMetrics`.
 - Those numbers are in the README with the model, the date, the case count and
   the exact command that produced them.
-- `leakRate` is zero on the suite. Any leak blocks a release.
+- `leakRate` is published with the case count and a confidence interval, and a
+  release is blocked by a regression against the previous recorded run rather
+  than by a fixed threshold. The judge in S1-11 is a model with its own error
+  rate, so a demand for zero from a probabilistic system measured by a
+  probabilistic instrument gets either quietly dropped or calibrated away, and
+  both are worse than an honest number. An absolute bar can be set once the
+  observed variance across runs is known.
 
 **Kill criteria.**
 
@@ -166,8 +172,10 @@ breadth.
       writer. depends: S1-10, S1-11, S0-02
 - [ ] S1-13 (S) `hintOverreach`: compare the rung a turn used against the rung
       the ladder had unlocked. depends: S1-12, S0-00d
-- [ ] S1-14 (S) First numbers in the README, with their provenance.
-      depends: S1-12
+- [ ] S1-14 (S) First numbers in the README, with their provenance, `leakRate`
+      carrying its case count and confidence interval. This run is the recorded
+      baseline that later runs are compared against, so it is stored, not only
+      published. depends: S1-12
 - [ ] S1-15 (S) Install the hooks bundle locally and record what Claude Code
       actually does with a deny, including whether the agent retries.
       depends: S1-02, S1-03
