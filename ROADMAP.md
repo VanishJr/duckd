@@ -12,11 +12,17 @@ What gets built and in what order. How the system is shaped is
   demanding session. Anything larger is split.
 - `depends: S0-03` blocks the task on another task. `depends: OD-5` blocks it on
   an open decision, which means the decision has to be made and written down
-  before the code can be written.
-- Stages 0 and 1 are committed scope. Stages 2 through 4 are provisional: they
+  before the code can be written. A decision that is made twice, because the
+  measurement that settles it cannot exist until the code runs, is recorded by
+  its own task in the Stage 0 decision block, so a task blocked on the
+  provisional half depends on that task and not on the decision. The task that
+  ratifies or overturns the choice is named in the decision.
+- Stages 0 and 1 are committed scope. Stages 2 through 4 are indicative: they
   exist to make the direction explicit, not to promise delivery. Reordering or
   cutting within 2 through 4 is expected and does not need an amendment to this
-  document.
+  document. Indicative rather than provisional, because provisional is used
+  below in a different sense, for a choice made now and re-decided against
+  evidence later.
 - Every `TODO(` marker in the tree maps to a task. The mapping is at the bottom.
 
 Starting point: `@duckd/core` has the phase machine (legal transitions, legal
@@ -35,6 +41,12 @@ real bugs with it in Claude Code instead of asking the agent directly.
 
 - `@duck <problem>` in Claude Code opens a session; every following turn returns
   exactly one phase-tagged question until the developer verifies a fix.
+- Over the week of real use, the share of sessions that had to be opened by hand
+  because the host model missed the trigger stays under the threshold S0-00e
+  names. Under OD-7's provisional choice a session exists only once the host
+  model calls the tool, and a session that never opened is one the Stage 1
+  guards can never fire on, so this is the bullet that tests whether that choice
+  works.
 - Phase transitions are decided by a provider judgement over the transcript, and
   an illegal transition cannot be written to a session.
 - A session survives a Claude Code restart and resumes from disk by id.
@@ -53,15 +65,48 @@ real bugs with it in Claude Code instead of asking the agent directly.
   machine, meaning prompt-level constraint is not enough and Stage 1 enforcement
   is load-bearing rather than belt-and-braces. Reorder, do not continue.
 - Cost per session is high enough that I would not pay it myself. Measure it,
-  write the number down, decide against the number.
+  write the number down, decide against the number. The number S0-15 records is
+  an upper bound: OD-6's provisional choice makes two to three provider calls per
+  turn where one may do, so before this criterion fires, cost the combined call.
+  Killing the project on the unoptimised figure kills it on a configuration
+  chosen for reversibility rather than for price.
 
 **Tasks.**
 
-- [ ] S0-00a (M) Decide OD-3, who authors the text the developer reads, and
-      write it into the spec or an ADR.
+- [ ] S0-00a (M) Make OD-3's provisional choice, duckd authors the text the
+      developer reads, and write it into an ADR that records it as provisional
+      and names S0-15 as its ratification. This is not the final answer to OD-3,
+      which cannot be given before the cost figure exists.
 - [ ] S0-00b (S) Decide OD-2, Session.phase against Turn.phase. ADR.
-- [ ] S0-00c (M) Decide OD-6, one provider call per turn or several. ADR.
-- [ ] S0-00d (M) Decide OD-4 and ratify the hint ladder into the spec.
+- [ ] S0-00c (M) Make OD-6's provisional choice, separate calls per concern, and
+      write it into an ADR that records it as provisional and names S1-12 as its
+      ratification. Not the final answer to OD-6, which cannot be given before
+      each judgement can be measured on its own.
+- [ ] S0-00d (M) Decide OD-4. Ratify the ladder's structure into the spec, which
+      is that it is bounded above, that every rung states what it still may not
+      say, that no rung reveals the fix, and that escalation does not begin
+      before two stuck exchanges. Declare the 4 and 6 thresholds configuration
+      defaults; they do not go into the spec. Define "stuck" and the
+      `stuckExchanges` reset rule in the same pass. This closes the source of
+      truth violation: `hints.ts` then implements a ratified structure with
+      configured values rather than extending the spec with numbers the spec
+      never stated.
+- [ ] S0-00e (S) Make OD-7's provisional choice, a prompt instruction rather
+      than a `UserPromptSubmit` hook, and write it into an ADR that records it
+      as provisional and names S0-15 as its ratification. Naming the threshold
+      is part of this task: what share of sessions opened by hand is acceptable,
+      written down before the data exists rather than chosen from it afterwards.
+      The Stage 0 Definition of Done tests against that number and S0-15
+      measures it. Not the final answer to OD-7, which cannot be given before
+      the trigger has been missed or not missed in real use.
+- [ ] S0-00f (S) Record OD-5's provisional choice, `cwd` as the key an
+      out-of-process guard resolves a session by, in an ADR marked provisional
+      that names S1-15 as its ratification. It sits in Stage 0 although the
+      decision surfaces in Stage 1, because the reasoning is already written and
+      an ADR scattered across stages is an ADR that does not get written.
+- [ ] S0-00g (S) Record OD-8's provisional choice, the file-backed store, in an
+      ADR marked provisional that names S1-16 as its ratification. In Stage 0
+      for the same reason as S0-00f.
 - [ ] S0-01 (M) Prompt set as pure string builders in `core`: exit-condition
       judge, stuck judge, question generator. No I/O, no vendor types.
       depends: S0-00a, S0-00c
@@ -75,9 +120,13 @@ real bugs with it in Claude Code instead of asking the agent directly.
 - [ ] S0-04 (M) Off-ramp in `advance`: detect the deliberate request, set
       `offRampTaken`, emit the answer with the trade-off sentence. Decide what
       `resolution` becomes, since `abandoned` currently conflates a chosen
-      off-ramp with giving up. depends: S0-02
+      off-ramp with giving up. That decides what a published number counts: the
+      resolution rate S1-14 publishes is only meaningful once the two are
+      separate, and a deliberate off-ramp is the mechanism working as designed
+      rather than a failure, so folding it into abandonment understates the
+      project's own numbers. depends: S0-02
 - [ ] S0-05 (M) `FileSessionStore` under `~/.duckd/sessions/`: one JSON file per
-      session, temp-file-plus-rename writes.
+      session, temp-file-plus-rename writes. depends: S0-00g
 - [ ] S0-06 (S) Store conformance suite, run against both implementations so the
       in-memory store cannot drift from the file-backed one. depends: S0-05
 - [ ] S0-07 (M) `AnthropicProvider`: credentials of its own, retry on transient
@@ -95,7 +144,9 @@ real bugs with it in Claude Code instead of asking the agent directly.
       tool. `TOOL_NAMES` in `packages/mcp/src/index.ts` already carries these
       four names; this task does not get to change them quietly.
 - [ ] S0-10 (L) `createDuckServer(options)`: the four tools wired to `core` and
-      `FileSessionStore`. depends: S0-02, S0-05, S0-09
+      `FileSessionStore`. How a session comes to be opened is OD-7, so the shape
+      of `duck_start_session` follows S0-00e. depends: S0-02, S0-05, S0-09,
+      S0-00e
 - [ ] S0-11 (M) `duckd-mcp` bin: `--transport stdio`, `--session-dir`, clean
       shutdown on SIGTERM. depends: S0-10
 - [ ] S0-12 (M) `duckd start` on commander: the same engine over stdin/stdout,
@@ -107,10 +158,20 @@ real bugs with it in Claude Code instead of asking the agent directly.
       for clients without it. depends: S0-10
 - [ ] S0-14 (S) Local install note in `examples/claude-code/README.md`: how to
       point Claude Code at a locally built `duckd-mcp`, and what is still missing.
-      Not a substitute for the generated skill. depends: S0-11
+      Not a substitute for the generated skill. What the note tells the reader to
+      install for the trigger follows OD-7. depends: S0-11, S0-00e
 - [ ] S0-15 (S) Usage log for the week: bugs attempted, resolved, leaked,
       abandoned, cost. Feeds the kill criteria above and the analysis in Stage 4.
-      depends: S0-11
+      This is also where OD-3 is ratified: the cost per session recorded here is
+      the figure S0-00a's ADR defers to, so this task either confirms the
+      provisional choice or rewrites that ADR. Record the cost as an upper bound
+      and say why: under OD-6's provisional choice the engine makes two to three
+      provider calls per turn where one combined call may do, so this is the
+      price of a configuration chosen for reversibility, not the shipping price.
+      It ratifies OD-7 in the same pass, which means logging one more field: how
+      many sessions had to be opened by hand because the host model missed the
+      trigger. That count is the evidence S0-00e's ADR defers to.
+      depends: S0-11, S0-00e
 
 ---
 
@@ -156,7 +217,8 @@ breadth.
 **Tasks.**
 
 - [ ] S1-01 (M) Resolve "is a duck session open" from a hook payload, out of
-      process. depends: S0-05, OD-5
+      process. Keep the lookup behind one function so the key can be swapped
+      when S1-15 ratifies OD-5. depends: S0-05, S0-00f
 - [ ] S1-02 (M) `PreToolUse` guard: deny `MUTATING_TOOLS` during an open session
       unless the off-ramp is taken. depends: S1-01
 - [ ] S1-03 (M) `Stop` guard: phase tag present, exactly one question, block with
@@ -173,27 +235,37 @@ breadth.
 - [ ] S1-08 (M) Feed `RepoContext` into Preparation so hypotheses and questions
       are anchored to real paths and lines. depends: S1-06, S0-01
 - [ ] S1-09 (S) Bound what reaches the provider: cap hunk size, skip ignored
-      paths and obvious secret files. depends: S1-08
+      paths and obvious secret files. The cap bounds cost as well as exposure:
+      under OD-3's first option every hunk that passes it is paid context on
+      every turn. Record the per-turn token count at the chosen cap alongside
+      the safety behaviour, so cost is a measured property of this task rather
+      than something noticed later. depends: S1-08
 - [ ] S1-10 (M) Load the socratic-debugging-benchmark into `EvalCase[]`, pinned
       to a commit.
 - [ ] S1-11 (M) Leak judge: one question, "does this turn contain the fix?",
       calibrated against a hand-labelled fixture set before it is trusted.
       depends: S1-10
 - [ ] S1-12 (M) `run(suite, provider) -> EvalRun` plus the Markdown report
-      writer. depends: S1-10, S1-11, S0-02
+      writer. This is also where OD-6 is ratified: with each judgement measurable
+      on its own, the separate calls either earn their cost or collapse into one
+      combined call. depends: S1-10, S1-11, S0-02
 - [ ] S1-13 (S) `hintOverreach`: compare the rung a turn used against the rung
       the ladder had unlocked. depends: S1-12, S0-00d
 - [ ] S1-14 (S) First numbers in the README, with their provenance, `leakRate`
       carrying its case count and confidence interval. This run is the recorded
       baseline that later runs are compared against, so it is stored, not only
-      published. depends: S1-12
+      published. depends: S1-12, S0-04
 - [ ] S1-15 (S) Install the hooks bundle locally and record what Claude Code
-      actually does with a deny, including whether the agent retries.
+      actually does with a deny, including whether the agent retries. This is
+      also where OD-5 is ratified: the payload observed here either confirms
+      `cwd` or replaces the key with the host `session_id`.
       depends: S1-02, S1-03
 - [ ] S1-16 (S) ADR on the session store now that a hook process and a server
       process contend for it. This is the open question
       `docs/architecture.md` defers; Stage 1 is when it stops being theoretical.
-      depends: S1-02
+      It is where OD-8 is ratified, and it settles the writer count first and the
+      format second: whether the hook writes at all decides whether files are
+      still sufficient. depends: S1-02
 
 ---
 
@@ -220,9 +292,10 @@ no API key.
 - Symbol binding does not improve resolution rate or turns-to-root-cause over
   diff and blame alone (S2-05 measures this). Then tree-sitter is cost with no
   benefit and comes back out.
-- Local models leak the fix at a rate the leak judge flags. The no-key path is
-  then a different product, not the same one cheaper. Document that rather than
-  shipping it as an equal option.
+- A local model's `leakRate` is worse than the baseline S1-14 recorded, and the
+  two confidence intervals do not overlap, so the gap is not run-to-run noise
+  (S2-11 measures this). The no-key path is then a different product, not the
+  same one cheaper. Document that rather than shipping it as an equal option.
 
 **Tasks.**
 
@@ -274,8 +347,17 @@ command plus one credential.
   hand-written adapters in a trench coat, which is the drift it exists to
   prevent. Ship the Claude Code artifact alone and say why.
 - A month after publishing, nobody outside me has installed it, and the reason
-  people give is the API key. That is signal to revisit ADR-0002 through its
-  Option C, not to keep improving the packaging.
+  people give is the API key. ADR-0002 leaves one response here that is mine to
+  make: Option B's local path, which is what S2-06 and S3-14 exist for. So the
+  check is whether that path is actually reachable, meaning it is documented
+  before the install command, it runs without an account, and S2-11's numbers
+  say honestly what it gives up. If it is reachable and people still do not
+  install, the response is not Option C. Option C waits on some client shipping
+  a supported replacement for sampling, which is not something I can do, and a
+  criterion whose response is to wait for a third party is consolation. The
+  response is to accept that duckd's audience is developers who already hold an
+  API key or already run a local model, write that limit into the README as
+  stated scope, and stop treating adoption outside it as a packaging problem.
 
 **Tasks.**
 
@@ -369,7 +451,13 @@ anything.
 - **General assistance.** Not code review, not a linter, not an explainer, not a
   chat interface. The tool surface stays at the four MCP tools named in S0-09
   (`duck_start_session`, `duck_respond`, `duck_get_session`, `duck_end_session`),
-  because every extra tool is another route around the constraint.
+  because every extra tool is another route around the constraint. The cost of
+  that limit is that duckd can only speak, never act. It cannot run the tests,
+  cannot reproduce the bug, cannot check whether the fix worked. The empirical
+  close at the end of SOLVE is the developer going and running it, and that is
+  structural rather than a missing feature. Any future addition along the lines
+  of "let it at least run the test suite" is not a convenience change, it
+  changes what duckd is.
 - **A non-Node runtime.** Rejected in ADR-0001 on integration cost.
 - **Independent package versioning before 1.0.** Requires a release tool; the
   packages move together until there is a reason they should not.
@@ -450,11 +538,45 @@ and the host relays it, the `Stop` guard is checking text duckd generated
 itself, and its remaining value is catching what the host added on top. If the
 tool returns a directive and the host phrases the question, the guard is the
 only mechanism holding the Prime Directive on text duckd did not write, and
-S1-03 becomes the single most important task in Stage 1. Decided on Stage 0
-convenience alone, that consequence surfaces long after the decision, in a stage
-whose shape it already changed.
+S1-03 becomes the single most important task in Stage 1.
 
-### OD-4: what counts as a stuck exchange, and are the upper rungs normative?
+This is not only an authorship question, it decides the cost of a session and
+whether duckd exists outside Claude Code. Reading code is tens of thousands of
+tokens per turn; judging a transcript is hundreds. So the option matters mostly
+through what enters the paid context, not through who does the reading. Under
+the first option duckd sees the code, its bill scales with how tightly
+`code-context` bounds the input, and S1-09 stops being a safety task and becomes
+an economic one. Under the second option the host reads the code on its own
+subscription and duckd only verifies, which is cheap by construction, but the
+question is then written by a model that has already read the code and knows the
+answer, so the strongest claim available drops from "duckd never generates a fix"
+to "duckd rejects turns that fail a probabilistic check". That weaker claim also
+rests entirely on the `Stop` hook, which exists in Claude Code and has no
+equivalent in Cursor, Copilot or Junie. Enforcement is expected to differ in
+strength across hosts, and the Non-goals section allows that. What it does not
+allow is enforcement existing in one host and being absent in the rest, which is
+what the second option produces: elsewhere the question is written by a model
+that has read the code, with nothing holding it. Under the first option the
+refusal is a property of the text itself, because duckd wrote it, and the hook is
+a second line rather than the only one. The real choice is therefore between
+cheap and Claude Code only, and costlier but independent of any host. Decide
+against the cost figure S0-15 records, not at the desk.
+
+Decided on Stage 0 convenience alone, that consequence surfaces long after the
+decision, in a stage whose shape it already changed.
+
+The cost figure does not exist until a week of real use has produced it, and that
+week needs an engine which has already picked an option, so OD-3 is decided
+twice. The provisional choice is the first option, duckd sees the code and writes
+the question. It is selected on cost of reversal rather than on expected
+correctness: text duckd generated can be demoted to a directive later, while an
+engine that only ever emitted directives has no question generator to promote, so
+the first option forecloses nothing and the second forecloses the first. S0-00a
+records that choice in an ADR that states it is provisional and names its
+ratification. S0-15 is that ratification: measured against the cost per session
+it either confirms the provisional choice or forces the ADR to be rewritten.
+
+### OD-4: what counts as a stuck exchange, and what in the ladder is normative?
 
 The spec states one threshold: a hint after 2 or more stuck exchanges in a phase.
 `HINT_LADDER` encodes three more thresholds (2, 4, 6) that the spec does not
@@ -462,7 +584,30 @@ mention. The spec is silent rather than contradictory, but per the source of
 truth rule the ladder still has to be ratified into the spec or reduced to what
 the spec says.
 
-Separately, nothing defines "stuck":
+The decide-twice pattern that OD-3, OD-5 and OD-6 use does not apply here. A spec
+that is provisional is not a spec, and a normative document carrying a number
+nobody can defend teaches its readers that its numbers are negotiable. The split
+is between what is normative and what is a parameter, not between now and later.
+
+Normative, and defensible without any measurement:
+
+- The ladder is bounded above. There is a last rung, and the engine cannot invent
+  one past it.
+- Every rung carries an explicit list of what it still may not say.
+- No rung reveals the fix.
+- Escalation does not begin before two stuck exchanges.
+
+That structure is what makes the constraint auditable rather than promised, and
+none of it rests on a number. The threshold of 2 stays in the spec because it is
+already there and has a stated basis.
+
+Not normative: the 4 and 6 at which `locate-area` and `name-mechanism` unlock.
+Nothing establishes those values and no measurement is planned that would. They
+are configuration defaults, they belong in code, and changing one is a default
+change rather than a spec change, so it does not force a major version bump after
+S4-09.
+
+What the split does not settle is the trigger. Nothing defines "stuck":
 
 - **A model judgement per turn**, asked whether the developer made progress.
   Matches "clearly stuck" as a human would read it. Cost: another provider call
@@ -479,8 +624,14 @@ thresholds of 2, 4 and 6 in `HINT_LADDER` are already on `main` while the spec
 states only the first. S0-02 is what makes them executable behaviour, and from
 that point code that extends the spec is driving the engine, which breaks the
 source of truth rule in `AGENTS.md` in the one place the project cannot afford
-it. The ladder is ratified into the spec, or reduced to what the spec says,
-before anything depends on it.
+it. The split closes that violation: once S0-00d has ratified the structure and
+declared the upper thresholds defaults, `hints.ts` implements a ratified
+structure with configured values instead of extending the spec with numbers the
+spec never stated.
+
+S1-13 is unaffected either way. It compares the rung a turn used against the rung
+the ladder had unlocked, which holds regardless of the threshold at which it
+unlocked.
 
 ### OD-5: how does an out-of-process guard find the open session?
 
@@ -500,6 +651,17 @@ its own `SessionId`. Nothing connects them.
 S1-01 is blocked on this, and getting it wrong means either a guard that never
 fires or a guard that never stops firing.
 
+The three options can only be weighed against a real Claude Code hook payload,
+and the task that observes one, S1-15, cannot run until a guard already exists.
+So OD-5 is decided twice. The provisional choice is `cwd`, selected on cost of
+reversal rather than on expected correctness: it works on every host, including
+the bare CLI where no host `session_id` exists, so the guard runs everywhere
+while the question is still open. S0-00f records that choice, S1-01 is blocked on
+it rather than on the final one, and S1-01 keeps session lookup behind one
+function so the key can be swapped. S1-15 is the ratification: against a real payload it
+either confirms `cwd` or replaces it with the host `session_id`, which is then a
+change to that one function.
+
 ### OD-6: one provider call per turn, or several?
 
 `advance` needs an exit-condition judgement, a stuck judgement, and a question.
@@ -516,6 +678,23 @@ fires or a guard that never stops firing.
 This is also an eval question: separate calls are easier to measure, so the
 architecture that is cheaper to run may be the one that is harder to trust.
 
+That evidence arrives at S1-12, the first point where each judgement can be
+measured on its own, and S1-12 needs an engine that already makes its calls one
+way or the other. So OD-6 is decided twice. The provisional choice is separate
+calls per concern, selected on cost of reversal rather than on expected
+correctness: with three prompts in hand, merging them into one structured call is
+a short piece of work, while splitting a single combined prompt means writing the
+three that were never written. S0-00c makes that provisional choice, S1-12
+ratifies it or collapses the calls into one.
+
+The consequence has to be stated because it will otherwise fire on its own: the
+option that is cheapest to reverse is the expensive one to run, at two to three
+provider calls per turn instead of one. The cost per session S0-15 records is
+therefore an upper bound produced by a deliberately unoptimised configuration,
+not the shipping cost. The Stage 0 cost kill criterion and S0-15 both carry that
+qualification, so the project is not killed on a number taken from a
+configuration chosen for reversibility rather than for price.
+
 ### OD-7: what detects `@duck`?
 
 - **A generated skill or prompt instruction**, leaving it to the host model to
@@ -527,12 +706,49 @@ architecture that is cheaper to run may be the one that is harder to trust.
   in the bundle, Claude Code specific, with no equivalent on hosts that only take
   a prompt file, which reintroduces per-host behaviour differences.
 
-### OD-8: file-backed store or SQLite?
+The first option's cost is larger than the model occasionally missing a trigger.
+Under it a session exists only once the host model chooses to call
+`duck_start_session`, and until a session exists `PreToolUse` denies nothing, so
+an agent that never opens the session was never constrained at any point. The
+enforcement layer is gated on the model agreeing to be enforced, which is the
+same failure mode the hooks exist to close. That is what is traded against the
+second option's per-host divergence, and neither side of the trade is small.
 
-Already listed as an open question in `docs/architecture.md`. Recording here only
-when it must be answered: S1-02 is the first point where a hook process and a
-server process touch the same session, so the ADR (S1-16) belongs in Stage 1 and
-not later.
+This is the same argument OD-3 makes about the `Stop` hook, a mechanism present
+in one host and absent in the rest, so the two are decided together rather than
+separately.
+
+OD-7 is decided twice. The provisional choice is the prompt instruction,
+selected on cost of reversal rather than on expected correctness: adding a
+`UserPromptSubmit` hook later is additive, while building the hook first and
+removing it means the prompt path was never written and every host that is not
+Claude Code has nothing at all. S0-00e makes that choice and records it. The
+ratifying evidence is how often the host model misses or ignores the trigger,
+which only real use shows, so S0-15 ratifies OD-7 alongside OD-3, against the
+threshold S0-00e names.
+
+### OD-8: how many processes write to a session, and therefore file or SQLite?
+
+Already listed as an open question in `docs/architecture.md`, where it is written
+as a storage format choice. The format follows from a question underneath it: how
+many processes may write to a session. If only the server writes and the hook
+only reads, one JSON file per session with temp-file-plus-rename writes is
+sufficient indefinitely. If the hook also writes, and it will want to, to record
+that it denied an edit or to increment the stuck counter, then two processes
+contend for one session, real concurrent access control is required, and the
+format is a consequence rather than a choice. Decided as a library choice, this
+gets picked on ease of installation.
+
+OD-8 is decided twice and half of it is already made. The provisional choice is
+the file-backed store S0-05 ships, selected on cost of reversal rather than on
+expected correctness: `SessionStore` is an interface and S0-06 runs the same
+conformance suite against every implementation, so replacing the backing store is
+one more implementation against tests that already exist, while opening on SQLite
+means a dependency and a schema before anything has shown either is needed.
+S0-00g records that choice, and S0-05 is blocked on it. S1-02 is the first point
+where a hook process and a server process touch the same session. S1-16 is the
+ratification: with the writer count known rather than
+guessed, it either confirms files or specifies what replaces them.
 
 ---
 
