@@ -18,3 +18,4 @@ marked `Superseded by ADR-NNNN`.
 |-----|-------|--------|
 | [0001](./0001-typescript-monorepo.md) | TypeScript monorepo on pnpm workspaces | Accepted |
 | [0002](./0002-llm-provider-not-mcp-sampling.md) | Model access through `LlmProvider`, not MCP sampling | Accepted |
+| [0003](./0003-file-backed-session-store-over-sqlite.md) | File-backed session store over SQLite | Accepted |

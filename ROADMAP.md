@@ -17,6 +17,15 @@ What gets built and in what order. How the system is shaped is
   its own task in the Stage 0 decision block, so a task blocked on the
   provisional half depends on that task and not on the decision. The task that
   ratifies or overturns the choice is named in the decision.
+- An open decision states its options as list items opening with a bold span.
+  That is a contract, not a formatting habit: a mechanical check reads the
+  option set out of this file, and an option written as prose is invisible to
+  it. The bold span is a short label and not the argument: at most 60
+  characters once emphasis, backticks, case and trailing punctuation are
+  stripped. The sentence explaining the option goes after the bold span rather
+  than inside it, so `**Keep SOLVE closed.**` and `**One combined call**
+  returning a small structured object.` are both correct. A label over the cap
+  is an error the check reports, not an option it quietly accepts.
 - Stages 0 and 1 are committed scope. Stages 2 through 4 are indicative: they
   exist to make the direction explicit, not to promise delivery. Reordering or
   cutting within 2 through 4 is expected and does not need an amendment to this
@@ -518,17 +527,18 @@ nothing to critique. S0-02 cannot be written until it is settled.
 duckd runs its own model (ADR-0002) and the host agent also runs one. Both are in
 the loop, and it is not written down which one produces the visible question.
 
-- **The MCP tool returns the final text and the host relays it verbatim.** The
-  Prime Directive is then enforced on text duckd generated. Cost: the host is
-  under no obligation to relay verbatim, and nothing detects a paraphrase.
-- **The tool returns a directive and the host phrases it.** Fits how agents
-  normally behave, and the question inherits the host's context. Cost: the
-  constraint is back to being a request to a model duckd does not control, which
-  is the failure mode the hooks exist to close.
-- **duckd puts the question in front of the developer through elicitation**,
-  bypassing the host model for the text that matters. Cost: elicitation is a
-  prompt mechanism, not a conversation mechanism, and clients without it fall
-  back to the first option anyway.
+- **duckd writes the text.** The MCP tool returns the final text and the host
+  relays it verbatim. The Prime Directive is then enforced on text duckd
+  generated. Cost: the host is under no obligation to relay verbatim, and
+  nothing detects a paraphrase.
+- **The host phrases it.** The tool returns a directive and the host phrases the
+  question. Fits how agents normally behave, and the question inherits the
+  host's context. Cost: the constraint is back to being a request to a model
+  duckd does not control, which is the failure mode the hooks exist to close.
+- **duckd elicits the question.** duckd puts the question in front of the
+  developer through elicitation, bypassing the host model for the text that
+  matters. Cost: elicitation is a prompt mechanism, not a conversation
+  mechanism, and clients without it fall back to the first option anyway.
 
 This determines what S0-01 generates and what the `Stop` guard is actually
 checking, so it is a Stage 0 decision (S0-00a).
@@ -731,22 +741,65 @@ threshold S0-00e names.
 
 Already listed as an open question in `docs/architecture.md`, where it is written
 as a storage format choice. The format follows from a question underneath it: how
-many processes may write to a session. If only the server writes and the hook
-only reads, one JSON file per session with temp-file-plus-rename writes is
-sufficient indefinitely. If the hook also writes, and it will want to, to record
-that it denied an edit or to increment the stuck counter, then two processes
-contend for one session, real concurrent access control is required, and the
-format is a consequence rather than a choice. Decided as a library choice, this
-gets picked on ease of installation.
+many processes may write to a session.
+
+- **One JSON file per session, with temp-file-plus-rename writes.** What S0-05
+  ships, and sufficient while no two processes hold one session at the same time.
+  Cost: it holds only while that stays true, and the hook will want to write, to
+  record that it denied an edit or to increment the stuck counter.
+- **SQLite.** Real concurrent access control, which is what two processes
+  contending for one session require. Cost: a dependency and a schema before
+  anything has shown either is needed.
+
+If the hook also writes, two processes contend for one session, real concurrent
+access control is required, and the format is a consequence rather than a
+choice. Decided as a library choice, this gets picked on ease of installation.
+
+Three states have to be kept apart here, because the writer count is different in
+each and an earlier version of this section collapsed them.
+
+Nothing writes a session today. `packages/core/src/store.ts` holds the
+`SessionStore` interface, `InMemorySessionStore` and `TODO(store)`, so no durable
+store exists yet, and the `duckd-mcp`, `duckd` and guard binaries all print "not
+implemented yet" and exit 1.
+
+Two processes are specified to write, and both arrive in Stage 0. S0-10 wires the
+server's four tools to `FileSessionStore`. S0-12 gives `duckd start` the same
+engine with `--ephemeral` selecting the in-memory store, which makes the file
+store its default as well. S4-03 adds `duckd sessions ... resume` later. So the
+server is not the sole writer of the store from S0-12 onward, and this section
+previously said it was.
+
+The hook is the writer nobody has decided on. S1-02 denies mutating tools during
+an open session; whether it also records a denial or increments the stuck counter
+is what S1-16 settles, and S1-16 says so.
+
+The format turns on that distinction rather than on the count. The server and the
+CLI write the same directory but are not expected to hold one session at the same
+time: a terminal session is the developer's own, and a resume is of a session
+nobody has open. Temp-file-plus-rename covers that. It is an assumption and not a
+guarantee, nothing in the tree enforces it, and a developer resuming from the
+terminal a session an editor still has open would break it as a silent lost
+update, which is the one failure a file store cannot report. The hook is
+different in kind: it fires during a session the server has open, milliseconds
+apart, which is contention for one session and is what real concurrent access
+control exists for.
+
+This weakens the case for files without overturning it. The argument used to be
+that one process writes. It is now that several write and are not expected to
+collide, which is a weaker claim resting on an assumption nobody has written down
+as a constraint. If S0-12 or S1-02 shows the assumption does not hold, the
+provisional choice is due for revisiting before S1-16 rather than at it.
 
 OD-8 is decided twice and half of it is already made. The provisional choice is
 the file-backed store S0-05 ships, selected on cost of reversal rather than on
-expected correctness: `SessionStore` is an interface and S0-06 runs the same
-conformance suite against every implementation, so replacing the backing store is
-one more implementation against tests that already exist, while opening on SQLite
-means a dependency and a schema before anything has shown either is needed.
-S0-00g records that choice, and S0-05 is blocked on it. S1-02 is the first point
-where a hook process and a server process touch the same session. S1-16 is the
+expected correctness: `SessionStore` is an interface, which exists now, and
+S0-06 will run the same conformance suite against every implementation, which is
+unchecked and so is not written yet. Replacing the backing store is therefore one
+more implementation behind an interface that already exists, against a suite
+S0-06 still has to write, while opening on SQLite means a dependency and a schema
+before anything has shown either is needed.
+S0-00g records that choice, and S0-05 is blocked on it. S1-16 is the
 ratification: with the writer count known rather than
 guessed, it either confirms files or specifies what replaces them.
 
