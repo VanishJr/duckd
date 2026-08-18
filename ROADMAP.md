@@ -20,7 +20,12 @@ What gets built and in what order. How the system is shaped is
 - An open decision states its options as list items opening with a bold span.
   That is a contract, not a formatting habit: a mechanical check reads the
   option set out of this file, and an option written as prose is invisible to
-  it.
+  it. The bold span is a short label and not the argument: at most 60
+  characters once emphasis, backticks, case and trailing punctuation are
+  stripped. The sentence explaining the option goes after the bold span rather
+  than inside it, so `**Keep SOLVE closed.**` and `**One combined call**
+  returning a small structured object.` are both correct. A label over the cap
+  is an error the check reports, not an option it quietly accepts.
 - Stages 0 and 1 are committed scope. Stages 2 through 4 are indicative: they
   exist to make the direction explicit, not to promise delivery. Reordering or
   cutting within 2 through 4 is expected and does not need an amendment to this
@@ -522,17 +527,18 @@ nothing to critique. S0-02 cannot be written until it is settled.
 duckd runs its own model (ADR-0002) and the host agent also runs one. Both are in
 the loop, and it is not written down which one produces the visible question.
 
-- **The MCP tool returns the final text and the host relays it verbatim.** The
-  Prime Directive is then enforced on text duckd generated. Cost: the host is
-  under no obligation to relay verbatim, and nothing detects a paraphrase.
-- **The tool returns a directive and the host phrases it.** Fits how agents
-  normally behave, and the question inherits the host's context. Cost: the
-  constraint is back to being a request to a model duckd does not control, which
-  is the failure mode the hooks exist to close.
-- **duckd puts the question in front of the developer through elicitation**,
-  bypassing the host model for the text that matters. Cost: elicitation is a
-  prompt mechanism, not a conversation mechanism, and clients without it fall
-  back to the first option anyway.
+- **duckd writes the text.** The MCP tool returns the final text and the host
+  relays it verbatim. The Prime Directive is then enforced on text duckd
+  generated. Cost: the host is under no obligation to relay verbatim, and
+  nothing detects a paraphrase.
+- **The host phrases it.** The tool returns a directive and the host phrases the
+  question. Fits how agents normally behave, and the question inherits the
+  host's context. Cost: the constraint is back to being a request to a model
+  duckd does not control, which is the failure mode the hooks exist to close.
+- **duckd elicits the question.** duckd puts the question in front of the
+  developer through elicitation, bypassing the host model for the text that
+  matters. Cost: elicitation is a prompt mechanism, not a conversation
+  mechanism, and clients without it fall back to the first option anyway.
 
 This determines what S0-01 generates and what the `Stop` guard is actually
 checking, so it is a Stage 0 decision (S0-00a).
