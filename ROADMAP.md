@@ -49,7 +49,8 @@ real bugs with it in Claude Code instead of asking the agent directly.
 **Definition of Done.**
 
 - `@duck <problem>` in Claude Code opens a session; every following turn returns
-  exactly one phase-tagged question until the developer verifies a fix.
+  exactly one phase-tagged question, or in SOLVE a single critique in its place,
+  until the developer verifies a fix.
 - Over the week of real use, the share of sessions that had to be opened by hand
   because the host model missed the trigger stays under the threshold S0-00e
   names. Under OD-7's provisional choice a session exists only once the host
