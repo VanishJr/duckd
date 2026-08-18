@@ -55,7 +55,9 @@ a provenance header naming the spec revision. CI fails when an artifact goes sta
 A prompt saying "never write the fix" is a request the model honours *most* of the time,
 and the one session it slips is the session where the developer learns nothing. So the
 constraint is also mechanical: `@duckd/hooks` denies `Edit`/`Write` while a session is
-open, and the `Stop` guard rejects a turn with no phase tag or more than one question.
+open, and the `Stop` guard rejects a turn with no phase tag, with an empty body, or with
+more than one question. A turn carrying no question at all is rejected too, except in
+SOLVE, where the spec lets one critique stand in place of the question.
 Prompt and hook enforce the same rule from two directions; both are generated from the
 same spec.
 
