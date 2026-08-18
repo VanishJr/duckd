@@ -744,10 +744,9 @@ as a storage format choice. The format follows from a question underneath it: ho
 many processes may write to a session.
 
 - **One JSON file per session, with temp-file-plus-rename writes.** What S0-05
-  ships, and sufficient indefinitely while the server is the sole writer and the
-  hook only reads. Cost: it holds only while that stays true, and the hook will
-  want to write, to record that it denied an edit or to increment the stuck
-  counter.
+  ships, and sufficient while no two processes hold one session at the same time.
+  Cost: it holds only while that stays true, and the hook will want to write, to
+  record that it denied an edit or to increment the stuck counter.
 - **SQLite.** Real concurrent access control, which is what two processes
   contending for one session require. Cost: a dependency and a schema before
   anything has shown either is needed.
@@ -756,14 +755,49 @@ If the hook also writes, two processes contend for one session, real concurrent
 access control is required, and the format is a consequence rather than a
 choice. Decided as a library choice, this gets picked on ease of installation.
 
+Three states have to be kept apart here, because the writer count is different in
+each and an earlier version of this section collapsed them.
+
+Nothing writes a session today. `packages/core/src/store.ts` holds the
+`SessionStore` interface, `InMemorySessionStore` and `TODO(store)`, so no durable
+store exists yet, and the `duckd-mcp`, `duckd` and guard binaries all print "not
+implemented yet" and exit 1.
+
+Two processes are specified to write, and both arrive in Stage 0. S0-10 wires the
+server's four tools to `FileSessionStore`. S0-12 gives `duckd start` the same
+engine with `--ephemeral` selecting the in-memory store, which makes the file
+store its default as well. S4-03 adds `duckd sessions ... resume` later. So the
+server is not the sole writer of the store from S0-12 onward, and this section
+previously said it was.
+
+The hook is the writer nobody has decided on. S1-02 denies mutating tools during
+an open session; whether it also records a denial or increments the stuck counter
+is what S1-16 settles, and S1-16 says so.
+
+The format turns on that distinction rather than on the count. The server and the
+CLI write the same directory but are not expected to hold one session at the same
+time: a terminal session is the developer's own, and a resume is of a session
+nobody has open. Temp-file-plus-rename covers that. It is an assumption and not a
+guarantee, nothing in the tree enforces it, and a developer resuming from the
+terminal a session an editor still has open would break it as a silent lost
+update, which is the one failure a file store cannot report. The hook is
+different in kind: it fires during a session the server has open, milliseconds
+apart, which is contention for one session and is what real concurrent access
+control exists for.
+
+This weakens the case for files without overturning it. The argument used to be
+that one process writes. It is now that several write and are not expected to
+collide, which is a weaker claim resting on an assumption nobody has written down
+as a constraint. If S0-12 or S1-02 shows the assumption does not hold, the
+provisional choice is due for revisiting before S1-16 rather than at it.
+
 OD-8 is decided twice and half of it is already made. The provisional choice is
 the file-backed store S0-05 ships, selected on cost of reversal rather than on
 expected correctness: `SessionStore` is an interface and S0-06 runs the same
 conformance suite against every implementation, so replacing the backing store is
 one more implementation against tests that already exist, while opening on SQLite
 means a dependency and a schema before anything has shown either is needed.
-S0-00g records that choice, and S0-05 is blocked on it. S1-02 is the first point
-where a hook process and a server process touch the same session. S1-16 is the
+S0-00g records that choice, and S0-05 is blocked on it. S1-16 is the
 ratification: with the writer count known rather than
 guessed, it either confirms files or specifies what replaces them.
 
