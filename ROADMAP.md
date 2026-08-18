@@ -17,6 +17,10 @@ What gets built and in what order. How the system is shaped is
   its own task in the Stage 0 decision block, so a task blocked on the
   provisional half depends on that task and not on the decision. The task that
   ratifies or overturns the choice is named in the decision.
+- An open decision states its options as list items opening with a bold span.
+  That is a contract, not a formatting habit: a mechanical check reads the
+  option set out of this file, and an option written as prose is invisible to
+  it.
 - Stages 0 and 1 are committed scope. Stages 2 through 4 are indicative: they
   exist to make the direction explicit, not to promise delivery. Reordering or
   cutting within 2 through 4 is expected and does not need an amendment to this
@@ -731,13 +735,20 @@ threshold S0-00e names.
 
 Already listed as an open question in `docs/architecture.md`, where it is written
 as a storage format choice. The format follows from a question underneath it: how
-many processes may write to a session. If only the server writes and the hook
-only reads, one JSON file per session with temp-file-plus-rename writes is
-sufficient indefinitely. If the hook also writes, and it will want to, to record
-that it denied an edit or to increment the stuck counter, then two processes
-contend for one session, real concurrent access control is required, and the
-format is a consequence rather than a choice. Decided as a library choice, this
-gets picked on ease of installation.
+many processes may write to a session.
+
+- **One JSON file per session, with temp-file-plus-rename writes.** What S0-05
+  ships, and sufficient indefinitely while the server is the sole writer and the
+  hook only reads. Cost: it holds only while that stays true, and the hook will
+  want to write, to record that it denied an edit or to increment the stuck
+  counter.
+- **SQLite.** Real concurrent access control, which is what two processes
+  contending for one session require. Cost: a dependency and a schema before
+  anything has shown either is needed.
+
+If the hook also writes, two processes contend for one session, real concurrent
+access control is required, and the format is a consequence rather than a
+choice. Decided as a library choice, this gets picked on ease of installation.
 
 OD-8 is decided twice and half of it is already made. The provisional choice is
 the file-backed store S0-05 ships, selected on cost of reversal rather than on
