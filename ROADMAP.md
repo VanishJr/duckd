@@ -793,10 +793,12 @@ provisional choice is due for revisiting before S1-16 rather than at it.
 
 OD-8 is decided twice and half of it is already made. The provisional choice is
 the file-backed store S0-05 ships, selected on cost of reversal rather than on
-expected correctness: `SessionStore` is an interface and S0-06 runs the same
-conformance suite against every implementation, so replacing the backing store is
-one more implementation against tests that already exist, while opening on SQLite
-means a dependency and a schema before anything has shown either is needed.
+expected correctness: `SessionStore` is an interface, which exists now, and
+S0-06 will run the same conformance suite against every implementation, which is
+unchecked and so is not written yet. Replacing the backing store is therefore one
+more implementation behind an interface that already exists, against a suite
+S0-06 still has to write, while opening on SQLite means a dependency and a schema
+before anything has shown either is needed.
 S0-00g records that choice, and S0-05 is blocked on it. S1-16 is the
 ratification: with the writer count known rather than
 guessed, it either confirms files or specifies what replaces them.
