@@ -49,7 +49,8 @@ real bugs with it in Claude Code instead of asking the agent directly.
 **Definition of Done.**
 
 - `@duck <problem>` in Claude Code opens a session; every following turn returns
-  exactly one phase-tagged question until the developer verifies a fix.
+  exactly one phase-tagged question, or in SOLVE a single critique in its place,
+  until the developer verifies a fix.
 - Over the week of real use, the share of sessions that had to be opened by hand
   because the host model missed the trigger stays under the threshold S0-00e
   names. Under OD-7's provisional choice a session exists only once the host
@@ -195,8 +196,10 @@ breadth.
 - With the bundle installed, `Edit` and `Write` are denied while a session is
   open and the off-ramp has not been taken, and the denial message names the
   session.
-- A duck turn with no phase tag, or with more than one question, is blocked by
-  the `Stop` guard and regenerated.
+- A duck turn with no phase tag, with an empty body, or with more than one
+  question is blocked by the `Stop` guard and regenerated. So is a turn with no
+  question at all, except in SOLVE, where the spec lets one critique stand in
+  place of the question.
 - Questions cite real files, lines and commits taken from `git diff` and
   `git blame`, not paraphrases of them.
 - The eval suite runs against
@@ -230,8 +233,9 @@ breadth.
       when S1-15 ratifies OD-5. depends: S0-05, S0-00f
 - [ ] S1-02 (M) `PreToolUse` guard: deny `MUTATING_TOOLS` during an open session
       unless the off-ramp is taken. depends: S1-01
-- [ ] S1-03 (M) `Stop` guard: phase tag present, exactly one question, block with
-      a reason otherwise. depends: S1-01, S1-05
+- [ ] S1-03 (M) `Stop` guard: phase tag present, body non-empty, one question
+      outside SOLVE and never more than one in any phase, block with a reason
+      otherwise. depends: S1-01, S1-05
 - [ ] S1-04 (S) Guard fixtures: real Claude Code hook payloads captured once and
       replayed as tests, so the guards are not tested against a guess at the
       payload shape. depends: S1-02, S1-03
