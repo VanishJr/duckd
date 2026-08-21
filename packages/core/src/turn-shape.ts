@@ -30,10 +30,17 @@ export interface TurnShape {
   readonly ok: boolean
   /** The phase carried by the opening tag, or undefined when there is no opening tag. */
   readonly phase: Phase | undefined
-  /** The text after the opening tag, with whitespace at both ends removed. */
+  /**
+   * The text after the opening tag, with whitespace at both ends removed, or the
+   * whole turn text with whitespace at both ends removed when there is no opening
+   * tag to take the text after.
+   */
   readonly body: string
-  /** Questions counted in the body. See `countQuestions`. */
-  readonly questions: number
+  /**
+   * Questions counted in the body, or undefined when there is no opening tag. See
+   * `countQuestions`.
+   */
+  readonly questions?: number
   readonly problems: readonly TurnShapeProblem[]
 }
 
@@ -84,14 +91,14 @@ export function checkTurnShape(text: string): TurnShape {
 
   if (phase === undefined) {
     // Spec line 121: the phase is reported as absent, not inferred from the text.
-    // No question allowance is applied, because the allowance belongs to a phase
-    // and there is no phase here.
-    const body = trimmed.trimEnd()
+    // No question allowance is applied and no count is reported, because the
+    // allowance belongs to a phase and there is no phase here. Reporting no count
+    // rather than 0 or a count over the whole turn text is not a spec rule: it is
+    // the decision recorded against S1-05 as a gap.
     return {
       ok: false,
       phase: undefined,
-      body,
-      questions: countQuestions(body),
+      body: trimmed.trimEnd(),
       problems: ['missing-phase-tag'],
     }
   }
