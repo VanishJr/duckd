@@ -24,3 +24,4 @@ export {
 } from './provider.js'
 export type { Role, Session, SessionId, Turn } from './session.js'
 export { InMemorySessionStore, type SessionStore } from './store.js'
+export { checkTurnShape, type TurnShape, type TurnShapeProblem } from './turn-shape.js'
